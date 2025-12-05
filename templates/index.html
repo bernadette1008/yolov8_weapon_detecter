@@ -1,0 +1,53 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>YOLOv8 카메라 실시간 인식</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>YOLOv8 실시간 객체 인식</h1>
+
+    <div id="alert-banner" class="alert-hide">
+      <span>⚠️ 위험! 신뢰도 70% 이상인 객체 감지됨!</span>
+    </div>
+
+    <div class="video-wrap">
+      <img id="video-stream" src="/video_feed" alt="Video stream" />
+    </div>
+
+    <div class="info">
+      <p>모델: <strong>best.pt</strong></p>
+      <p>경고 임계값: <strong>70%</strong></p>
+    </div>
+  </div>
+
+  <script>
+    async function pollAlert() {
+      try {
+        const res = await fetch('/alert', {cache: 'no-store'});
+        if (!res.ok) return;
+        const j = await res.json();
+        const banner = document.getElementById('alert-banner');
+        if (j.alert) {
+          banner.classList.remove('alert-hide');
+          banner.classList.add('alert-show');
+        } else {
+          banner.classList.remove('alert-show');
+          banner.classList.add('alert-hide');
+        }
+      } catch (e) {
+        console.error('Alert poll error', e);
+      }
+    }
+
+    // Poll frequently (every 300ms)
+    setInterval(pollAlert, 300);
+    // initial poll
+    pollAlert();
+  </script>
+</body>
+</html>
