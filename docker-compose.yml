@@ -1,0 +1,12 @@
+services:
+  yolo-detector:
+    build: .
+    ports:
+      - "5000:5000"
+    devices:
+      - /dev/video0:/dev/video0  # 웹캠 접근 권한 (Linux)
+    volumes:
+      - .:/workspace/yolov8_weapon_detecter
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
